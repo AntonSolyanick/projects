@@ -7,6 +7,8 @@ const MainPage = () => {
   const projects = useSelector((state) => state);
   const dispatch = useDispatch();
 
+  const prj = Array.from(projects);
+
   const addNewProject = () => {
     dispatch(addNewProjectAction(prompt()));
   };
@@ -17,8 +19,9 @@ const MainPage = () => {
       <p>Select your project</p>
       <div>
         <button onClick={addNewProject}>Create new project</button>
+        {console.log(projects)}
         <ul>
-          {projects.map((project) => (
+          {prj.map((project) => (
             <li>
               <Link to={`/${project.name}`}>{project.name} </Link>
             </li>

@@ -1,6 +1,6 @@
 import { createStore } from "redux";
 
-const initialState = [];
+const initialState = {};
 
 const ADD_NEW_PROJECT = "ADD_NEW_PROJECT";
 const ADD_NEW_TODO = "ADD_NEW_TODO";
@@ -8,16 +8,19 @@ const ADD_NEW_TODO = "ADD_NEW_TODO";
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_NEW_PROJECT:
-      let isProjectExist = false;
+      const projecct = action.payload;
+      // let isProjectExist = false;
+      // console.log(state);
+      // for (let key of Object.keys(state)) {
+      //   if (key === action.payload) {
+      //     isProjectExist = !isProjectExist;
+      //   }
+      // }
 
-      state.forEach((project) => {
-        if (project.name === action.payload) {
-          isProjectExist = !isProjectExist;
-        }
-      });
-      return isProjectExist
-        ? state
-        : [...state, { name: action.payload, todos: [] }];
+      // return isProjectExist
+      //   ? state
+      //   : (state[projecct] = { name: action.payload, todos: [] });
+      return (state["sa"] = { name: projecct, todos: [] });
 
     case ADD_NEW_TODO:
       const project = state.filter((project) => {
