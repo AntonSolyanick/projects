@@ -6,19 +6,20 @@ import "./App.css";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainPage />} exact></Route>
-      <Route path="/:projectName" element={<ProjectPage />} exact></Route>
-      {/* <div className="head">Heading</div>
+    <>
+      <Routes>
+        <Route path="/" element={<MainPage />} exact></Route>
+        <Route path="/:projectName" element={<ProjectPage />} exact></Route>
+      </Routes>
 
       <style jsx>
         {`
-          .head {
-            background-color: black;
+          * {
+            list-style-type: none;
           }
         `}
-      </style> */}
-    </Routes>
+      </style>
+    </>
   );
 }
 
