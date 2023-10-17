@@ -12,7 +12,7 @@ function App() {
         <Route path="/:projectName" element={<ProjectPage />} exact></Route>
       </Routes>
 
-      <style jsx>
+      <style jsx="true">
         {`
           * {
             list-style-type: none;

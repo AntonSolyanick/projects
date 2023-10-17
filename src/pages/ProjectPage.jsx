@@ -2,84 +2,156 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 
-import { addNewTodoAction } from "../store";
-import { dropAction } from "../store";
+import { projectsAction } from "../store/projectsSlice";
 
 const ProjectPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
+  const [counter, setCounter] = useState(0);
+  const [curTodo, setCurTodo] = useState(null);
+  const [curBoard, setCurBoard] = useState(null);
 
-  const projects = useSelector((state) =>
-    state.filter((project) => {
-      return project.name === params.projectName;
-    })
+  const project = useSelector(
+    (state) =>
+      state.projects.filter((project) => {
+        return project.projectName === params.projectName;
+      })[0]
   );
 
   const addNewTodo = () => {
     dispatch(
-      addNewTodoAction({ projectName: params.projectName, text: prompt() })
+      projectsAction.addNewTodoAction({
+        projectName: params.projectName,
+        text: prompt(),
+      })
     );
+    setCounter((prevState) => prevState + 1);
   };
 
-  const [curTodo, setCurTodo] = useState(null);
-
-  const dragStartHandler = (e, todo) => {
+  const dragStartHandler = (e, todo, board) => {
+    console.log("touch");
     setCurTodo(todo);
-    //console.log("start", todo);
+    setCurBoard(board);
   };
   const dragLeaveHandler = (e) => {};
+
   const dragOverHandler = (e) => {
     e.preventDefault();
   };
   const dragEndHandler = (e) => {};
-  const dragDropHandler = (e, todo) => {
+
+  const dragDropHandler = (e, todo, board) => {
     e.preventDefault();
-    dispatch(dropAction({ curTodo: { ...curTodo }, todo: { ...todo } }));
-    //console.log("drop", todo);
+    if (e.target.className !== "todo") {
+      return;
+    }
+    console.log(e.target.className === "todo", e.target.className);
+    dispatch(
+      projectsAction.dropAction({
+        projectName: params.projectName,
+        curTodo: curTodo,
+        todo: todo,
+        curBoard: curBoard,
+        board: board,
+      })
+    );
   };
+
+  const onBoardDropHandler = (e, board) => {
+    e.preventDefault();
+    if (e.target.className !== "board") {
+      return;
+    }
+    dispatch(
+      projectsAction.dropOnBoardAction({
+        projectName: params.projectName,
+        curTodo: curTodo,
+        curBoard: curBoard,
+        board: board,
+      })
+    );
+  };
+
+  // const dragDropHandler = (e, todo, board) => {
+  //   e.preventDefault();
+  //   dispatch(
+  //     projectsAction.dropAction({
+  //       projectName: params.projectName,
+  //       curTodo: curTodo,
+  //       todo: todo,
+  //     })
+  //   );
+  //   console.log(project.queue);
+  // };
 
   return (
     <>
       <h2>Todos of {params.projectName} project </h2>
       <button onClick={addNewTodo}>add new Todo</button>
       <section>
-        <ul>
+        <ul
+          className="board"
+          onDragOver={(e) => dragOverHandler(e)}
+          onDrop={(e) => onBoardDropHandler(e, project.queue)}
+        >
           <li>
-            <h3>{projects[0].categories.queue.title}</h3>
+            <h3>{project.queue[0]}</h3>
           </li>
-          {projects[0].categories.queue.todos.map((todo) => (
-            <li
-              draggable={true}
-              onDragStart={(e) => dragStartHandler(e, todo)}
-              onDragLeave={(e) => dragLeaveHandler(e)}
-              onDragOver={(e) => dragOverHandler(e)}
-              onDragEnd={(e) => dragEndHandler(e)}
-              onDrop={(e) => dragDropHandler(e, todo)}
-            >
-              {todo.text}
-            </li>
-          ))}
+          {project.queue.map(
+            (todo, i) =>
+              i > 0 && (
+                <li
+                  className="todo"
+                  draggable={true}
+                  ontouchstart={(e) => dragStartHandler(e, todo, project.queue)}
+                  onDragStart={(e) => dragStartHandler(e, todo, project.queue)}
+                  onDragLeave={(e) => dragLeaveHandler(e)}
+                  onDragOver={(e) => dragOverHandler(e)}
+                  ontouchend={(e) => dragEndHandler(e)}
+                  onDragEnd={(e) => dragEndHandler(e)}
+                  onDrop={(e) => dragDropHandler(e, todo, project.queue)}
+                >
+                  {todo}
+                </li>
+              )
+          )}
+        </ul>
+
+        <ul
+          className="board"
+          onDragOver={(e) => dragOverHandler(e)}
+          onDrop={(e) => onBoardDropHandler(e, project.development)}
+        >
+          <li>
+            <h3>{project.development[0]}</h3>
+          </li>
+          {project.development.map(
+            (todo, i) =>
+              i > 0 && (
+                <li
+                  className="todo"
+                  draggable={true}
+                  onDragStart={(e) =>
+                    dragStartHandler(e, todo, project.development)
+                  }
+                  onDragLeave={(e) => dragLeaveHandler(e)}
+                  onDragOver={(e) => dragOverHandler(e)}
+                  onDragEnd={(e) => dragEndHandler(e)}
+                  onDrop={(e) => dragDropHandler(e, todo, project.development)}
+                >
+                  {todo}
+                </li>
+              )
+          )}
         </ul>
 
         <ul>
           <li>
-            <h3>{projects[0].categories.development.title}</h3>
+            <h3>{project.done[0]}</h3>
           </li>
-          {projects[0].categories.development.todos.map((todo) => (
-            <li>{todo.text}</li>
-          ))}
-        </ul>
-
-        <ul>
-          <li>
-            <h3>{projects[0].categories.done.title}</h3>
-          </li>
-          {projects[0].categories.done.todos.map((todo) => (
-            <li>{todo.text}</li>
-          ))}
+          {project.done.map((todo, i) => i > 0 && <li>{todo}</li>)}
         </ul>
       </section>
-
       <style jsx="true">
         {`
           * {

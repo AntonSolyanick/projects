@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { addNewProjectAction } from "../store";
+import { projectsAction } from "../store/projectsSlice";
 
 const MainPage = () => {
-  const projects = useSelector((state) => state);
+  const projects = useSelector((state) => state.projects);
   const dispatch = useDispatch();
 
   const addNewProject = () => {
-    dispatch(addNewProjectAction(prompt()));
+    dispatch(projectsAction.addNewProjectAction(prompt()));
   };
 
   return (
@@ -20,7 +20,7 @@ const MainPage = () => {
         <ul>
           {projects.map((project) => (
             <li>
-              <Link to={`/${project.name}`}>{project.name} </Link>
+              <Link to={`/${project.projectName}`}>{project.projectName} </Link>
             </li>
           ))}
         </ul>
