@@ -7,7 +7,6 @@ import { projectsAction } from "../store/projectsSlice";
 const ProjectPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
-  const [counter, setCounter] = useState(0);
   const [curTodo, setCurTodo] = useState(null);
   const [curBoard, setCurBoard] = useState(null);
 
@@ -25,14 +24,15 @@ const ProjectPage = () => {
         text: prompt(),
       })
     );
-    setCounter((prevState) => prevState + 1);
   };
 
   const dragStartHandler = (e, todo, board) => {
+    //addNewTodo();
     console.log("touch");
     setCurTodo(todo);
     setCurBoard(board);
   };
+
   const dragLeaveHandler = (e) => {};
 
   const dragOverHandler = (e) => {
@@ -72,18 +72,6 @@ const ProjectPage = () => {
     );
   };
 
-  // const dragDropHandler = (e, todo, board) => {
-  //   e.preventDefault();
-  //   dispatch(
-  //     projectsAction.dropAction({
-  //       projectName: params.projectName,
-  //       curTodo: curTodo,
-  //       todo: todo,
-  //     })
-  //   );
-  //   console.log(project.queue);
-  // };
-
   return (
     <>
       <h2>Todos of {params.projectName} project </h2>
@@ -103,13 +91,13 @@ const ProjectPage = () => {
                 <li
                   className="todo"
                   draggable={true}
-                  ontouchstart={(e) => dragStartHandler(e, todo, project.queue)}
                   onDragStart={(e) => dragStartHandler(e, todo, project.queue)}
                   onDragLeave={(e) => dragLeaveHandler(e)}
                   onDragOver={(e) => dragOverHandler(e)}
-                  ontouchend={(e) => dragEndHandler(e)}
                   onDragEnd={(e) => dragEndHandler(e)}
                   onDrop={(e) => dragDropHandler(e, todo, project.queue)}
+                  onTouchStart={(e) => dragStartHandler(e, todo, project.queue)}
+                  onTouchEnd={(e) => dragEndHandler(e)}
                 >
                   {todo}
                 </li>
@@ -138,6 +126,10 @@ const ProjectPage = () => {
                   onDragOver={(e) => dragOverHandler(e)}
                   onDragEnd={(e) => dragEndHandler(e)}
                   onDrop={(e) => dragDropHandler(e, todo, project.development)}
+                  onTouchStart={(e) =>
+                    dragStartHandler(e, todo, project.development)
+                  }
+                  onTouchEnd={(e) => dragEndHandler(e)}
                 >
                   {todo}
                 </li>

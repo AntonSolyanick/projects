@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import { HashRouter } from "react-router-dom";
 import { Provider } from "react-redux";
+import "./firebase";
 
 import store from "./store";
 import "./index.css";

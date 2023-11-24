@@ -1,10 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const sortTodos = (a, b) => {
-  if (a.order > b.order) return 1;
-  else return -1;
-};
-
 const projectsSlice = createSlice({
   name: "projects",
   initialState: [],
@@ -67,48 +62,6 @@ const projectsSlice = createSlice({
       project[curBoard].splice(indexOfCurTodo, 1);
       project[board].push(action.payload.curTodo);
     },
-
-    // addNewProjectAction(state, action) {
-    //   state.push({
-    //     projectName: action.payload,
-    //     queue: [{ text: "queue", order: -1 }],
-    //     development: [
-    //       { text: "development", order: -1 },
-    //       { text: "aaa", order: 0 },
-    //     ],
-    //     done: ["done"],
-    //   });
-    // },
-
-    // addNewTodoAction(state, action) {
-    //   state.map((project) =>
-    //     project.projectName === action.payload.projectName
-    //       ? project.queue.push({
-    //           text: action.payload.text,
-    //           order: action.payload.order,
-    //         })
-    //       : project.queue
-    //   );
-    // },
-
-    // dropAction(state, action) {
-    //   let indexOfProject = null;
-    //   state.forEach((project, i) => {
-    //     if (project.projectName === action.payload.projectName)
-    //       indexOfProject = i;
-    //   });
-    //   const newQueue = state[indexOfProject].queue.map((todo) => {
-    //     if (todo.text === action.payload.todo.text) {
-    //       return { ...todo, order: action.payload.curTodo.order };
-    //     }
-    //     if (todo.text === action.payload.curTodo.text) {
-    //       return { ...todo, order: action.payload.todo.order };
-    //     }
-    //     return todo;
-    //   });
-
-    //   state[indexOfProject].queue = newQueue.sort(sortTodos);
-    // },
   },
 });
 
