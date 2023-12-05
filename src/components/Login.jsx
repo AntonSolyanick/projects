@@ -19,7 +19,7 @@ const Login = () => {
       setLoginError("Please input correct data");
       return;
     }
-    console.log(loginError);
+
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then(({ user }) => {

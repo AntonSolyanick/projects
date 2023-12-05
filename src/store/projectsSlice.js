@@ -4,6 +4,16 @@ const projectsSlice = createSlice({
   name: "projects",
   initialState: [],
   reducers: {
+    setProjectsFromDbAction(state, action) {
+      //console.log(Object.keys(action.payload));
+
+      const newState = Object.keys(action.payload).map((key, i) => {
+        return { projectName: key, ...action.payload[key] };
+      });
+
+      //console.log(newState);
+      return newState;
+    },
     addNewProjectAction(state, action) {
       state.push({
         projectName: action.payload,

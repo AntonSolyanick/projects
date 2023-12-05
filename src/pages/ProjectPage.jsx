@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDatabase, ref, set } from "firebase/database";
 
 import { projectsAction } from "../store/projectsSlice";
 
@@ -16,19 +17,28 @@ const ProjectPage = () => {
         return project.projectName === params.projectName;
       })[0]
   );
+  const user = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const db = getDatabase();
+    set(ref(db, `${user.id}/${project.projectName}`), {
+      queue: project.queue,
+      development: project.development,
+      done: project.done,
+    });
+  }, [project]);
 
   const addNewTodo = () => {
+    const text = prompt();
     dispatch(
       projectsAction.addNewTodoAction({
         projectName: params.projectName,
-        text: prompt(),
+        text: text,
       })
     );
   };
 
   const dragStartHandler = (e, todo, board) => {
-    //addNewTodo();
-    console.log("touch");
     setCurTodo(todo);
     setCurBoard(board);
   };
@@ -45,7 +55,7 @@ const ProjectPage = () => {
     if (e.target.className !== "todo") {
       return;
     }
-    console.log(e.target.className === "todo", e.target.className);
+
     dispatch(
       projectsAction.dropAction({
         projectName: params.projectName,
@@ -55,6 +65,7 @@ const ProjectPage = () => {
         board: board,
       })
     );
+    console.log(project);
   };
 
   const onBoardDropHandler = (e, board) => {
@@ -70,6 +81,7 @@ const ProjectPage = () => {
         board: board,
       })
     );
+    console.log(project);
   };
 
   return (
