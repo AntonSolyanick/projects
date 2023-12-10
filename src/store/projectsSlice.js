@@ -1,24 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const createDate = () => {
+  const date = new Date();
+  const formatedDate = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
+  const millisecondsDate = date.getTime();
+  return {
+    formatedDate,
+    millisecondsDate,
+  };
+};
+
 const projectsSlice = createSlice({
   name: "projects",
   initialState: [],
   reducers: {
     setProjectsFromDbAction(state, action) {
-      //console.log(Object.keys(action.payload));
-
       const newState = Object.keys(action.payload).map((key, i) => {
         return { projectName: key, ...action.payload[key] };
       });
-
-      //console.log(newState);
       return newState;
     },
+
     addNewProjectAction(state, action) {
+      const date = createDate();
       state.push({
         projectName: action.payload,
-        queue: ["queue", "1", "2"],
-        development: ["development", "aaa", "bbb"],
+        projectDate: date.formatedDate,
+        millisecondsDate: date.millisecondsDate,
+        queue: ["queue"],
+        development: ["development"],
         done: ["done"],
       });
     },
@@ -26,7 +36,7 @@ const projectsSlice = createSlice({
     addNewTodoAction(state, action) {
       state.map((project) =>
         project.projectName === action.payload.projectName
-          ? project.queue.push(action.payload.text)
+          ? project.queue.push(action.payload.todo)
           : project.queue
       );
     },
@@ -40,8 +50,16 @@ const projectsSlice = createSlice({
       const project = state[indexOfProject];
       const curBoard = action.payload.curBoard[0];
       const board = action.payload.board[0];
-      const indexOfCurTodo = project[curBoard].indexOf(action.payload.curTodo);
-      const indexOfDropTodo = project[board].indexOf(action.payload.todo);
+      const indexOfCurTodo = project[curBoard].findIndex((todo) => {
+        if (typeof todo !== "string") {
+          return todo.text === action.payload.curTodo.text;
+        }
+      });
+      const indexOfDropTodo = project[board].findIndex((todo) => {
+        if (typeof todo !== "string") {
+          return todo.text === action.payload.todo.text;
+        }
+      });
 
       if (indexOfCurTodo <= indexOfDropTodo) {
         project[board].splice(indexOfDropTodo + 1, 0, action.payload.curTodo);
@@ -51,6 +69,8 @@ const projectsSlice = createSlice({
         project[curBoard].splice(indexOfCurTodo, 1);
         project[board].splice(indexOfDropTodo + 1, 0, action.payload.curTodo);
       }
+
+      console.log(indexOfCurTodo, indexOfDropTodo);
     },
 
     dropOnBoardAction(state, action) {
@@ -63,7 +83,11 @@ const projectsSlice = createSlice({
       const project = state[indexOfProject];
       const curBoard = action.payload.curBoard[0];
       const board = action.payload.board[0];
-      const indexOfCurTodo = project[curBoard].indexOf(action.payload.curTodo);
+      const indexOfCurTodo = project[curBoard].findIndex((todo) => {
+        if (typeof todo !== "string") {
+          return todo.text === action.payload.curTodo.text;
+        }
+      });
 
       if (curBoard === board) {
         return;
@@ -71,6 +95,23 @@ const projectsSlice = createSlice({
 
       project[curBoard].splice(indexOfCurTodo, 1);
       project[board].push(action.payload.curTodo);
+    },
+
+    deleteProjectAction(state, action) {
+      return state.filter((project) => project.projectName !== action.payload);
+    },
+
+    deleteTodoAction(state, action) {
+      state.map((project) =>
+        project.projectName === action.payload.projectName
+          ? project[action.payload.titleColumn].splice(
+              project[action.payload.titleColumn].indexOf(
+                action.payload.todoText
+              ),
+              1
+            )
+          : project
+      );
     },
   },
 });

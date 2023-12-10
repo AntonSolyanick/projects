@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getDatabase, ref, set } from "firebase/database";
 
 import { projectsAction } from "../store/projectsSlice";
+import { useWriteToDatabase } from "../hooks/use-writeToDataBase";
 
 const ProjectPage = () => {
   const params = useParams();
@@ -18,22 +18,41 @@ const ProjectPage = () => {
       })[0]
   );
   const user = useSelector((state) => state.user);
+  const writeTodoToDatabase = useWriteToDatabase();
+
+  const boards = Object.values(project);
+  const sortedBoards = [];
+  boards.forEach((board) => {
+    if (typeof board !== "object") return;
+    if (board[0] === "queue") sortedBoards[1] = board;
+    if (board[0] === "development") sortedBoards[2] = board;
+    if (board[0] === "done") sortedBoards[3] = board;
+  });
 
   useEffect(() => {
-    const db = getDatabase();
-    set(ref(db, `${user.id}/${project.projectName}`), {
-      queue: project.queue,
-      development: project.development,
-      done: project.done,
-    });
+    writeTodoToDatabase(user.id, "set", project);
   }, [project]);
 
   const addNewTodo = () => {
     const text = prompt();
+    const date = new Date();
     dispatch(
       projectsAction.addNewTodoAction({
         projectName: params.projectName,
-        text: text,
+        todo: {
+          text: text,
+          date: `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`,
+        },
+      })
+    );
+  };
+
+  const deleteTodo = (todoText, titleColumn) => {
+    dispatch(
+      projectsAction.deleteTodoAction({
+        projectName: params.projectName,
+        titleColumn,
+        todoText,
       })
     );
   };
@@ -41,6 +60,7 @@ const ProjectPage = () => {
   const dragStartHandler = (e, todo, board) => {
     setCurTodo(todo);
     setCurBoard(board);
+    console.log(todo, board);
   };
 
   const dragLeaveHandler = (e) => {};
@@ -65,7 +85,6 @@ const ProjectPage = () => {
         board: board,
       })
     );
-    console.log(project);
   };
 
   const onBoardDropHandler = (e, board) => {
@@ -81,81 +100,55 @@ const ProjectPage = () => {
         board: board,
       })
     );
-    console.log(project);
   };
 
   return (
     <>
       <h2>Todos of {params.projectName} project </h2>
       <button onClick={addNewTodo}>add new Todo</button>
+
       <section>
-        <ul
-          className="board"
-          onDragOver={(e) => dragOverHandler(e)}
-          onDrop={(e) => onBoardDropHandler(e, project.queue)}
-        >
-          <li>
-            <h3>{project.queue[0]}</h3>
-          </li>
-          {project.queue.map(
-            (todo, i) =>
-              i > 0 && (
-                <li
-                  className="todo"
-                  draggable={true}
-                  onDragStart={(e) => dragStartHandler(e, todo, project.queue)}
-                  onDragLeave={(e) => dragLeaveHandler(e)}
-                  onDragOver={(e) => dragOverHandler(e)}
-                  onDragEnd={(e) => dragEndHandler(e)}
-                  onDrop={(e) => dragDropHandler(e, todo, project.queue)}
-                  onTouchStart={(e) => dragStartHandler(e, todo, project.queue)}
-                  onTouchEnd={(e) => dragEndHandler(e)}
-                >
-                  {todo}
-                </li>
-              )
-          )}
-        </ul>
+        {sortedBoards.map(
+          (board, i) =>
+            typeof board === "object" && (
+              <ul
+                className="board"
+                onDragOver={(e) => dragOverHandler(e)}
+                onDrop={(e) => onBoardDropHandler(e, board)}
+              >
+                {board.map((todo, i) =>
+                  i === 0 ? (
+                    <li>
+                      <h3>{todo}</h3>
+                    </li>
+                  ) : (
+                    <li>
+                      <p
+                        className="todo"
+                        draggable={true}
+                        onDragStart={(e) => dragStartHandler(e, todo, board)}
+                        onDragLeave={(e) => dragLeaveHandler(e)}
+                        onDragOver={(e) => dragOverHandler(e)}
+                        onDragEnd={(e) => dragEndHandler(e)}
+                        onDrop={(e) => dragDropHandler(e, todo, board)}
+                        onTouchStart={(e) => dragStartHandler(e, todo, board)}
+                        onTouchEnd={(e) => dragEndHandler(e)}
+                      >
+                        {todo.text}
+                      </p>
 
-        <ul
-          className="board"
-          onDragOver={(e) => dragOverHandler(e)}
-          onDrop={(e) => onBoardDropHandler(e, project.development)}
-        >
-          <li>
-            <h3>{project.development[0]}</h3>
-          </li>
-          {project.development.map(
-            (todo, i) =>
-              i > 0 && (
-                <li
-                  className="todo"
-                  draggable={true}
-                  onDragStart={(e) =>
-                    dragStartHandler(e, todo, project.development)
-                  }
-                  onDragLeave={(e) => dragLeaveHandler(e)}
-                  onDragOver={(e) => dragOverHandler(e)}
-                  onDragEnd={(e) => dragEndHandler(e)}
-                  onDrop={(e) => dragDropHandler(e, todo, project.development)}
-                  onTouchStart={(e) =>
-                    dragStartHandler(e, todo, project.development)
-                  }
-                  onTouchEnd={(e) => dragEndHandler(e)}
-                >
-                  {todo}
-                </li>
-              )
-          )}
-        </ul>
-
-        <ul>
-          <li>
-            <h3>{project.done[0]}</h3>
-          </li>
-          {project.done.map((todo, i) => i > 0 && <li>{todo}</li>)}
-        </ul>
+                      <p>{todo.date}</p>
+                      <button onClick={() => deleteTodo(todo, board[0])}>
+                        delete
+                      </button>
+                    </li>
+                  )
+                )}
+              </ul>
+            )
+        )}
       </section>
+
       <style jsx="true">
         {`
           * {
