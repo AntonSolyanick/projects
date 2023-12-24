@@ -8,7 +8,7 @@ import { useValidateAuth } from "../hooks/validate-auth";
 
 const SignupModal = ({ setShowSignUpModal }) => {
   const dispatch = useDispatch();
-  const [SignUpError, setSignUpError] = useState("");
+  const [SignUpError, setSignUpError] = useState("   ");
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const validateAuth = useValidateAuth();
@@ -30,7 +30,9 @@ const SignupModal = ({ setShowSignUpModal }) => {
           })
         );
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error(error);
+      });
     if (SignUpError) return;
     setEmailInput("");
     setPasswordInput("");
@@ -38,15 +40,20 @@ const SignupModal = ({ setShowSignUpModal }) => {
   };
 
   return (
-    <Modal>
+    <Modal
+      showModalHandler={() => {
+        setShowSignUpModal();
+      }}
+    >
       <form
+        className="container--signup"
         onSubmit={(e) => {
           e.preventDefault();
-
           handlerRegister(emailInput, passwordInput);
         }}
       >
         <input
+          className="input--signup"
           type="email"
           placeholder="email"
           value={emailInput}
@@ -55,18 +62,36 @@ const SignupModal = ({ setShowSignUpModal }) => {
           }}
         />
         <input
+          className="input--signup"
           type="password"
           placeholder="password"
           value={passwordInput}
           onChange={(e) => {
             e.preventDefault();
-
             setPasswordInput(e.target.value);
           }}
         />
-        <button type="submit"> Create an account</button>
+        <button className="button--create--account" type="submit">
+          Create an account
+        </button>
       </form>
-      {SignUpError && <h2>{SignUpError}</h2>}
+      {SignUpError && <p className="error--message">{SignUpError}</p>}
+      <style jsx="true">
+        {`
+          .container--signup {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 270px;
+          }
+          .input--signup {
+            margin-bottom: 7px;
+          }
+          .button--create--account {
+            width: 100px;
+          }
+        `}
+      </style>
     </Modal>
   );
 };

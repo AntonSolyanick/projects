@@ -3,7 +3,7 @@ import { getDatabase, ref, set, remove } from "firebase/database";
 const initialProject = {
   projectName: "New Project",
   projectDate: "project.projectDate",
-  millisecondsDate: "0",
+  milliseconds: "0",
   queue: ["queue"],
   development: ["development"],
   done: ["done"],
@@ -15,7 +15,7 @@ export const useWriteToDatabase = () => {
     if (action === "set") {
       set(ref(db, `${userId}/${project.projectName}`), {
         projectDate: project.projectDate,
-        millisecondsDate: project.millisecondsDate,
+        milliseconds: project.milliseconds,
         queue: project.queue,
         development: project.development,
         done: project.done,

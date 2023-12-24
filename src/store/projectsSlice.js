@@ -26,7 +26,7 @@ const projectsSlice = createSlice({
       state.push({
         projectName: action.payload,
         projectDate: date.formatedDate,
-        millisecondsDate: date.millisecondsDate,
+        milliseconds: date.millisecondsDate,
         queue: ["queue"],
         development: ["development"],
         done: ["done"],
@@ -52,12 +52,12 @@ const projectsSlice = createSlice({
       const board = action.payload.board[0];
       const indexOfCurTodo = project[curBoard].findIndex((todo) => {
         if (typeof todo !== "string") {
-          return todo.text === action.payload.curTodo.text;
+          return todo.milliseconds === action.payload.curTodo.milliseconds;
         }
       });
       const indexOfDropTodo = project[board].findIndex((todo) => {
         if (typeof todo !== "string") {
-          return todo.text === action.payload.todo.text;
+          return todo.milliseconds === action.payload.todo.milliseconds;
         }
       });
 
@@ -69,8 +69,6 @@ const projectsSlice = createSlice({
         project[curBoard].splice(indexOfCurTodo, 1);
         project[board].splice(indexOfDropTodo + 1, 0, action.payload.curTodo);
       }
-
-      console.log(indexOfCurTodo, indexOfDropTodo);
     },
 
     dropOnBoardAction(state, action) {
@@ -85,7 +83,7 @@ const projectsSlice = createSlice({
       const board = action.payload.board[0];
       const indexOfCurTodo = project[curBoard].findIndex((todo) => {
         if (typeof todo !== "string") {
-          return todo.text === action.payload.curTodo.text;
+          return todo.milliseconds === action.payload.curTodo.milliseconds;
         }
       });
 
