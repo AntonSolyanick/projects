@@ -1,25 +1,24 @@
-import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getDatabase, ref, child, get } from "firebase/database";
 
 import Layout from "./layout/Layout";
-import MainPage from "./pages/MainPage";
-import ProjectPage from "./pages/ProjectPage";
+import AnimatedRoutes from "./components/AnimatedRoutes";
 import { userActions } from "../src/store/userSlice";
 import { projectsAction } from "./store/projectsSlice";
-
-import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
   const projects = useSelector((state) => state.projects);
   const userData = useSelector((state) => state.user);
+  const data = JSON.parse(localStorage.getItem("projectData"));
 
   useEffect(() => {
     const projectDataLocalStor = JSON.stringify(projects);
-    localStorage.setItem("projectData", projectDataLocalStor);
+    projectDataLocalStor.length > 0
+      ? localStorage.setItem("projectData", projectDataLocalStor)
+      : localStorage.setItem("projectData", projectDataLocalStor);
   }, [projects]);
 
   useEffect(() => {
@@ -30,17 +29,13 @@ function App() {
     const dbRef = ref(getDatabase());
     get(child(dbRef, `${userData.id}`))
       .then((snapshot) => {
-        if (userData.id === null) {
-          dispatch(projectsAction.setProjectsFromDbAction([]));
-        } else {
-          const dataFromDb = snapshot.val();
-          dataFromDb === null
-            ? dispatch(projectsAction.setProjectsFromDbAction([]))
-            : dispatch(projectsAction.setProjectsFromDbAction(snapshot.val()));
-        }
+        const dataFromDb = snapshot.val();
+        dataFromDb === null
+          ? dispatch(projectsAction.setProjectsFromDbAction(data))
+          : dispatch(projectsAction.setProjectsFromDbAction(snapshot.val()));
       })
       .catch((error) => {
-        console.error(error);
+        //console.error(error);
       });
   }, [userData]);
 
@@ -53,30 +48,11 @@ function App() {
   return (
     <>
       <Layout showModal={showModal} showModalHandler={showModalHandler}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <MainPage
-                showModal={showModal}
-                showModalHandler={showModalHandler}
-              />
-            }
-            exact
-          ></Route>
-          <Route
-            path="/:projectName"
-            element={
-              <ProjectPage
-                showModal={showModal}
-                showModalHandler={showModalHandler}
-              />
-            }
-            exact
-          ></Route>
-        </Routes>
+        <AnimatedRoutes
+          showModal={showModal}
+          showModalHandler={showModalHandler}
+        ></AnimatedRoutes>
       </Layout>
-
       <style jsx="true">
         {`
           * {
@@ -114,7 +90,8 @@ function App() {
             width: 230px;
             border: none;
             border-radius: 5px;
-            background-color: #7b7070;
+            background-color: #ffff77;
+            color: black;
           }
           input::placeholder {
             color: black;

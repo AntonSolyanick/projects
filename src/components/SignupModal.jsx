@@ -4,7 +4,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 import Modal from "./Modal";
 import { userActions } from "../store/userSlice";
-import { useValidateAuth } from "../hooks/validate-auth";
+import { useValidateAuth } from "../hooks/use-validateAuth";
 
 const SignupModal = ({ setShowSignUpModal }) => {
   const dispatch = useDispatch();
@@ -31,9 +31,10 @@ const SignupModal = ({ setShowSignUpModal }) => {
         );
       })
       .catch((error) => {
-        console.error(error);
+        setSignUpError(error.message);
       });
     if (SignUpError) return;
+    setSignUpError("");
     setEmailInput("");
     setPasswordInput("");
     setShowSignUpModal(false);
@@ -53,6 +54,7 @@ const SignupModal = ({ setShowSignUpModal }) => {
         }}
       >
         <input
+          autoFocus
           className="input--signup"
           type="email"
           placeholder="email"

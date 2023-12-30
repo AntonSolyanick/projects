@@ -24,6 +24,7 @@ const InputModal = ({
       >
         <p className="modal--title">{text}</p>
         <input
+          autoFocus
           className="modal--input"
           onChange={setInputedItemNameHandler}
           value={inputedItemName}

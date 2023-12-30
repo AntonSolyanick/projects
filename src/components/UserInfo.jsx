@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { userActions } from "../store/userSlice";
+import { projectsAction } from "../store/projectsSlice";
 
 const UserInfo = ({ email }) => {
   const dispatch = useDispatch();
@@ -16,9 +17,11 @@ const UserInfo = ({ email }) => {
       <p>{email}</p>
       <button
         onClick={() => {
-          dispatch(userActions.removeUser());
-          localStorage.removeItem("userData");
           goToHomePage();
+          localStorage.removeItem("projectData");
+          localStorage.removeItem("userData");
+          dispatch(userActions.removeUser());
+          dispatch(projectsAction.setProjectsFromDbAction([]));
         }}
       >
         Log out

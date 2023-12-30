@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { motion } from "framer-motion";
 
 import { projectsAction } from "../store/projectsSlice";
 import { useWriteToDatabase } from "../hooks/use-writeToDataBase";
@@ -19,9 +21,9 @@ const MainPage = ({ showModalHandler, showModal }) => {
   const dispatch = useDispatch();
   const writeProjectToDatabase = useWriteToDatabase();
 
-  // убрть useEffect, перенести функцию writePr... в
   useEffect(() => {
     if (sortedProjects.length > 0) {
+      if (userData.id === null) return;
       const addedProject = sortedProjects[sortedProjects.length - 1];
       writeProjectToDatabase(userData.id, "set", addedProject);
     }
@@ -30,8 +32,16 @@ const MainPage = ({ showModalHandler, showModal }) => {
   const [inputedProjectName, setInputedProjectName] = useState("");
 
   const addNewProject = () => {
+    const re = /([\\\/\.\#\$\[\]])/;
+
+    if (re.test(String(inputedProjectName).toLowerCase())) {
+      setInputError(
+        `The project name can't contain ".", "#", "$", "/", "\" "[", or "]"`
+      );
+      return;
+    }
     if (
-      projects.filter((project) => project.projectName === inputedProjectName)
+      projects?.filter((project) => project.projectName === inputedProjectName)
         .length > 0 ||
       inputedProjectName === ""
     ) {
@@ -52,7 +62,15 @@ const MainPage = ({ showModalHandler, showModal }) => {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{
+        opacity: 0,
+      }}
+      animate={{
+        opacity: 1,
+        transition: { duration: 0.7 },
+      }}
+    >
       {showModal && (
         <InputModal
           addNewItemHandler={addNewProject}
@@ -64,25 +82,24 @@ const MainPage = ({ showModalHandler, showModal }) => {
         />
       )}
       <div className="container--flex">
-        <ul className="projects--table">
-          <li>
+        <TransitionGroup component="ul" className="projects--table">
+          <li className="button--add">
             <AddButton
               showModalHandler={showModalHandler}
-              height={180}
-              width={180}
-              border={6}
               text={"New project"}
             />
           </li>
 
           {sortedProjects.map((project) => (
-            <Project
-              project={project}
-              deleteProject={deleteProject}
+            <CSSTransition
               key={project.projectName}
-            />
+              timeout={500}
+              classNames="item-animated"
+            >
+              <Project project={project} deleteProject={deleteProject} />
+            </CSSTransition>
           ))}
-        </ul>
+        </TransitionGroup>
       </div>
 
       <style jsx="true">
@@ -95,7 +112,17 @@ const MainPage = ({ showModalHandler, showModal }) => {
             display: flex;
             justify-content: center;
           }
-
+          .button--add {
+            width: 180px;
+            height: 180px;
+            border: 6px solid white;
+            box-sizing: border-box;
+            border-radius: 3px;
+          }
+          .button--add:hover {
+            cursor: pointer;
+            transform: scale(1.03, 1.03);
+          }
           .projects--table {
             margin-top: 5vh;
             margin-left: 5vw;
@@ -105,9 +132,24 @@ const MainPage = ({ showModalHandler, showModal }) => {
             grid-row-gap: 35px;
             width: 80vw;
           }
+
+          .item-animated-enter {
+            opacity: 0;
+          }
+          .item-animated-enter-active {
+            opacity: 1;
+            transition: opacity 400ms ease-in;
+          }
+          .item-animated-exit {
+            opacity: 1;
+          }
+          .item-animated-exit-active {
+            opacity: 0;
+            transition: opacity 400ms ease-in;
+          }
         `}
       </style>
-    </>
+    </motion.div>
   );
 };
 

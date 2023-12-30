@@ -31,6 +31,7 @@ const Project = ({ project, deleteProject }) => {
             border: 1px solid white;
             box-shadow: 2px 3px 3px white;
           }
+
           .project--container:hover {
             transform: scale(1.03, 1.03);
           }

@@ -1,50 +1,26 @@
-const AddButton = ({
-  showModalHandler,
-  width,
-  height,
-  border,
-  text,
-  textSize,
-}) => {
+import { GoPlus } from "react-icons/go";
+
+const AddButton = ({ showModalHandler, text }) => {
   return (
     <div className="box--container" onClick={showModalHandler}>
-      <span className="line line--vertical" />
-      <span className="line line--horizontal" />
+      <GoPlus className="icon--plus"></GoPlus>
       <p className="text">{text}</p>
       <style jsx="true">{`
+        .icon--plus {
+          width: 70%;
+          height: auto;
+        }
         .box--container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
           box-sizing: border-box;
-          width: ${width}px;
-          height: ${height}px;
-          border: ${border}px solid white;
-          border-radius: ${height / 6}px;
+          width: 100%;
+          height: 100%;
         }
         .text {
-          font-size: ${textSize}px;
-          top: ${height / 3.5 + 15}%;
-          position: relative;
-        }
-        .line {
-          display: block;
-          width: ${width / 2.5}px;
-          border-bottom: ${border}px solid white;
-          border-radius: 5px;
-        }
-        .line--vertical {
-          transform: rotate(90deg);
-          position: relative;
-          top: ${width / 2 - 16}px;
-          left: ${width / 3.7}px;
-        }
-        .line--horizontal {
-          top: ${width / 2.2 - 14}px;
-          left: ${width / 3.7}px;
-          position: relative;
-        }
-        .box--container:hover {
-          color: black;
-          cursor: pointer;
-          transform: scale(1.03, 1.03);
+          margin: 0;
         }
       `}</style>
     </div>

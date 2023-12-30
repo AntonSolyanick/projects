@@ -46,19 +46,27 @@ const Todo = ({
             border: 1px solid white;
             border-radius: 5px;
             box-shadow: 2px 3px 3px white;
+            transition: margin 0.5s;
           }
+          .todo--container:hover {
+            cursor: grab;
+          }
+
           .todo--sub--container {
+            pointer-events: stroke;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-around;
           }
           .todo {
+            pointer-events: none;
             width: 65%;
             font-size: 18px;
             word-break: break-all;
           }
           .todo--date {
+            pointer-events: none;
             font-size: 11px;
             height: 10%;
           }

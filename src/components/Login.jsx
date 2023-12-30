@@ -4,9 +4,10 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
+import { projectsAction } from "../store/projectsSlice";
 import { userActions } from "../store/userSlice";
 import { modalActions } from "../store/modalSlice";
-import { useValidateAuth } from "../hooks/validate-auth";
+import { useValidateAuth } from "../hooks/use-validateAuth";
 import SignupModal from "../components/SignupModal";
 import ErrorModal from "./ErrorModal";
 
@@ -34,7 +35,8 @@ const Login = () => {
       setLoginError("Please input correct data");
       return;
     }
-    goToHomePage();
+    localStorage.removeItem("projectData");
+    dispatch(projectsAction.setProjectsFromDbAction([]));
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then(({ user }) => {
@@ -45,9 +47,12 @@ const Login = () => {
         };
         dispatch(userActions.setUser(userData));
         localStorage.setItem("userData", JSON.stringify(userData));
+        goToHomePage();
       })
       .catch((error) => {
-        console.error(error);
+        setShowErrorModal();
+        setLoginError("Invalid email or password");
+        return;
       });
   };
 
@@ -61,6 +66,7 @@ const Login = () => {
         }}
       >
         <input
+          className="login--input"
           type="email"
           placeholder="email"
           value={emailInput}
@@ -69,6 +75,7 @@ const Login = () => {
           }}
         />
         <input
+          className="login--input"
           type="password"
           placeholder="password"
           value={passwordInput}
@@ -101,10 +108,13 @@ const Login = () => {
       </div>
       <style jsx="true">
         {`
+          .login--input {
+            width: 200px;
+          }
           .container--login {
             display: flex;
             height: 90px;
-            width: 350px;
+            width: 300px;
             justify-content: space-around;
           }
           .container--form {
@@ -115,10 +125,11 @@ const Login = () => {
           }
           .button--signup {
             height: 60px;
+            width: 60px;
             margin-top: 20%;
           }
           .button--login {
-            width: 100px;
+            width: 80px;
           }
         `}
       </style>

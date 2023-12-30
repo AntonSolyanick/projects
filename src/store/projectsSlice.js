@@ -21,6 +21,12 @@ const projectsSlice = createSlice({
       return newState;
     },
 
+    setProjectsFromLocalStorge(state, action) {
+      return action.payload.length > 0
+        ? (state = [...action.payload])
+        : (state = []);
+    },
+
     addNewProjectAction(state, action) {
       const date = createDate();
       state.push({
@@ -34,9 +40,14 @@ const projectsSlice = createSlice({
     },
 
     addNewTodoAction(state, action) {
+      const date = createDate();
       state.map((project) =>
         project.projectName === action.payload.projectName
-          ? project.queue.push(action.payload.todo)
+          ? project.queue.push({
+              text: action.payload.todo,
+              date: date.formatedDate,
+              milliseconds: date.millisecondsDate,
+            })
           : project.queue
       );
     },
@@ -103,8 +114,8 @@ const projectsSlice = createSlice({
       state.map((project) =>
         project.projectName === action.payload.projectName
           ? project[action.payload.titleColumn].splice(
-              project[action.payload.titleColumn].indexOf(
-                action.payload.todoText
+              project[action.payload.titleColumn].findIndex(
+                (todo) => todo.milliseconds === action.payload.todo.milliseconds
               ),
               1
             )
