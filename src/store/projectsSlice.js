@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const createDate = () => {
   const date = new Date();
-  console.log(date.getMonth());
+  console.log(String(date.getMonth()).length);
   const formatedDate = `${date.getDate()}.${
-    String(date.getMonth() + 1).length > 0 ? "0" : ""
+    String(date.getMonth() + 1).length < 2 ? "0" : ""
   }${date.getMonth() + 1}.${date.getFullYear()}`;
   const millisecondsDate = date.getTime();
   return {
