@@ -5,10 +5,7 @@ import Login from "../components/Login";
 import UserInfo from "../components/UserInfo";
 
 const Layout = ({ children }) => {
-  //  const location = useLocation();
   const { isAuth, email } = useAuth();
-  // const pathname = window.location;
-  // console.log(pathname);
 
   return (
     <>
@@ -18,14 +15,6 @@ const Layout = ({ children }) => {
           <Link to="/" className="link">
             <h1 className="heading">Projects App</h1>
           </Link>
-          {/* {location.pathname.length > 1 && (
-            <span
-              className="project--name--heading "
-              onClick={(e) => e.preventDefault()}
-            >
-              {location.pathname}
-            </span>
-          )} */}
         </span>
         {isAuth ? <UserInfo email={email} /> : <Login />}
       </header>
